@@ -2,6 +2,7 @@
 #include "GameUtil.h"
 #include "Asteroid.h"
 #include "BoundingShape.h"
+#include "SmallAsteroid.h"
 
 Asteroid::Asteroid(void) : GameObject("Asteroid")
 {
@@ -41,5 +42,20 @@ bool Asteroid::CollisionTest(shared_ptr<GameObject> o)
 
 void Asteroid::OnCollision(const GameObjectList& objects)
 {
+    // Check what we collided with
+    for (GameObjectList::const_iterator it = objects.begin(); it != objects.end(); ++it)
+    {
+        shared_ptr<GameObject> obj = *it;
+        if (obj->GetType() == GameObjectType("Bullet"))
+        {
+            // Spawn 2 small asteroids at this position
+            for (int i = 0; i < 2; i++)
+            {
+                shared_ptr<SmallAsteroid> small = make_shared<SmallAsteroid>();
+                small->SetPosition(mPosition);
+                mWorld->AddObject(small);
+            }
+        }
+    }
     mWorld->FlagForRemoval(GetThisPtr());
 }
