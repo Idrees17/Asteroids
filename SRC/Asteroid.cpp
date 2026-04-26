@@ -38,7 +38,8 @@ Asteroid::~Asteroid(void)
 
 bool Asteroid::CollisionTest(shared_ptr<GameObject> o)
 {
-    if (GetType() == o->GetType()) return false;
+    if (o->GetType() == GameObjectType("Asteroid")) return false;
+    if (o->GetType() == GameObjectType("SmallAsteroid")) return false;
     if (mBoundingShape.get() == NULL) return false;
     if (o->GetBoundingShape().get() == NULL) return false;
     return mBoundingShape->CollisionTest(o->GetBoundingShape());
@@ -65,6 +66,7 @@ void Asteroid::OnCollision(const GameObjectList& objects)
                 small->SetBoundingShape(make_shared<BoundingSphere>(small->GetThisPtr(), 5.0f));
                 mWorld->AddObject(small);
             }
+            break; // Stop after first bullet collision found
         }
     }
     mWorld->FlagForRemoval(GetThisPtr());

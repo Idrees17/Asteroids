@@ -16,7 +16,8 @@ SmallAsteroid::~SmallAsteroid(void) {}
 bool SmallAsteroid::CollisionTest(shared_ptr<GameObject> o)
 {
     if (o->GetType() != GameObjectType("Bullet") &&
-        o->GetType() != GameObjectType("Spaceship"))
+        o->GetType() != GameObjectType("Spaceship") &&
+        o->GetType() != GameObjectType("SmallAsteroid"))
         return false;
     if (mBoundingShape.get() == NULL) return false;
     if (o->GetBoundingShape().get() == NULL) return false;
@@ -25,5 +26,13 @@ bool SmallAsteroid::CollisionTest(shared_ptr<GameObject> o)
 
 void SmallAsteroid::OnCollision(const GameObjectList& objects)
 {
-    mWorld->FlagForRemoval(GetThisPtr());
+    for (GameObjectList::const_iterator it = objects.begin(); it != objects.end(); ++it)
+    {
+        shared_ptr<GameObject> obj = *it;
+        if (obj->GetType() == GameObjectType("Bullet"))
+        {
+            mWorld->FlagForRemoval(GetThisPtr());
+            return;
+        }
+    }
 }
