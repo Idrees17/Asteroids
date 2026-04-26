@@ -11,6 +11,7 @@
 #include "BoundingSphere.h"
 #include "GUILabel.h"
 #include "Explosion.h"
+#include "SmallAsteroid.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -141,10 +142,17 @@ void Asteroids::OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 		explosion->SetRotation(object->GetRotation());
 		mGameWorld->AddObject(explosion);
 		mAsteroidCount--;
-		if (mAsteroidCount <= 0) 
-		{ 
-			SetTimer(500, START_NEXT_LEVEL); 
+		if (mAsteroidCount <= 0)
+		{
+			SetTimer(500, START_NEXT_LEVEL);
 		}
+	}
+	if (object->GetType() == GameObjectType("SmallAsteroid"))
+	{
+		shared_ptr<GameObject> explosion = CreateExplosion();
+		explosion->SetPosition(object->GetPosition());
+		explosion->SetRotation(object->GetRotation());
+		mGameWorld->AddObject(explosion);
 	}
 }
 

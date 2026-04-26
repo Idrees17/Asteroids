@@ -3,13 +3,17 @@
 #include "Asteroid.h"
 #include "BoundingShape.h"
 #include "SmallAsteroid.h"
+#include "Animation.h"
+#include "AnimationManager.h"
+#include "BoundingSphere.h"
+#include "Sprite.h"
 
 Asteroid::Asteroid(void) : GameObject("Asteroid")
 {
     mAngle = rand() % 360;
     mRotation = 0;
-    mPosition.x = rand() / 2;
-    mPosition.y = rand() / 2;
+    mPosition.x = (rand() % 200) - 100;
+    mPosition.y = (rand() % 200) - 100;
     mPosition.z = 0.0;
     mVelocity.x = 10.0 * cos(DEG2RAD * mAngle);
     mVelocity.y = 10.0 * sin(DEG2RAD * mAngle);
@@ -20,8 +24,8 @@ Asteroid::Asteroid(char const* const type_name) : GameObject(type_name)
 {
     mAngle = rand() % 360;
     mRotation = 0;
-    mPosition.x = rand() / 2;
-    mPosition.y = rand() / 2;
+    mPosition.x = (rand() % 200) - 100;
+    mPosition.y = (rand() % 200) - 100;
     mPosition.z = 0.0;
     mVelocity.x = 10.0 * cos(DEG2RAD * mAngle);
     mVelocity.y = 10.0 * sin(DEG2RAD * mAngle);
@@ -42,17 +46,23 @@ bool Asteroid::CollisionTest(shared_ptr<GameObject> o)
 
 void Asteroid::OnCollision(const GameObjectList& objects)
 {
-    // Check what we collided with
     for (GameObjectList::const_iterator it = objects.begin(); it != objects.end(); ++it)
     {
         shared_ptr<GameObject> obj = *it;
         if (obj->GetType() == GameObjectType("Bullet"))
         {
-            // Spawn 2 small asteroids at this position
             for (int i = 0; i < 2; i++)
             {
                 shared_ptr<SmallAsteroid> small = make_shared<SmallAsteroid>();
-                small->SetPosition(mPosition);
+                GLVector3f pos = mPosition;
+                pos.x += (i == 0) ? 5.0f : -5.0f;
+                small->SetPosition(pos);
+                Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("asteroid1");
+                shared_ptr<Sprite> sprite = make_shared<Sprite>(anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+                sprite->SetLoopAnimation(true);
+                small->SetSprite(sprite);
+                small->SetScale(0.1f);
+                small->SetBoundingShape(make_shared<BoundingSphere>(small->GetThisPtr(), 5.0f));
                 mWorld->AddObject(small);
             }
         }
