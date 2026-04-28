@@ -114,7 +114,6 @@ void Spaceship::OnCollision(const GameObjectList& objects)
 		}
 		if (obj->GetType() == GameObjectType("SmallAsteroid"))
 		{
-			// Bounce
 			GLVector3f normal = mPosition - obj->GetPosition();
 			float length = sqrt(normal.x * normal.x + normal.y * normal.y);
 			if (length > 0)
@@ -122,11 +121,9 @@ void Spaceship::OnCollision(const GameObjectList& objects)
 				normal.x /= length;
 				normal.y /= length;
 			}
-			GLVector3f otherVel = obj->GetVelocity();
-			float otherDot = otherVel.x * normal.x + otherVel.y * normal.y;
-			float myDot = mVelocity.x * normal.x + mVelocity.y * normal.y;
-			mVelocity.x += (otherDot - myDot) * normal.x;
-			mVelocity.y += (otherDot - myDot) * normal.y;
+			float dot = mVelocity.x * normal.x + mVelocity.y * normal.y;
+			mVelocity.x = mVelocity.x - 2.0f * dot * normal.x;
+			mVelocity.y = mVelocity.y - 2.0f * dot * normal.y;
 			return;
 		}
 	}

@@ -55,14 +55,13 @@ void SmallAsteroid::OnCollision(const GameObjectList& objects)
                 normal.x /= length;
                 normal.y /= length;
             }
-            GLVector3f myVel = mVelocity;
-            GLVector3f otherVel = obj->GetVelocity();
-            float myDot = myVel.x * normal.x + myVel.y * normal.y;
-            float otherDot = otherVel.x * normal.x + otherVel.y * normal.y;
-            mVelocity.x += (otherDot - myDot) * normal.x;
-            mVelocity.y += (otherDot - myDot) * normal.y;
 
-            // Small asteroid radius is 5.0f, large is 10.0f
+            // Reflect velocity along the collision normal
+            float dot = mVelocity.x * normal.x + mVelocity.y * normal.y;
+            mVelocity.x = mVelocity.x - 2.0f * dot * normal.x;
+            mVelocity.y = mVelocity.y - 2.0f * dot * normal.y;
+
+            // Push apart
             float overlap = 15.0f - length;
             if (overlap > 0)
             {
