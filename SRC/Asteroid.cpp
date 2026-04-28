@@ -67,11 +67,11 @@ bool Asteroid::CollisionTest(shared_ptr<GameObject> o)
 
 void Asteroid::OnCollision(const GameObjectList& objects)
 {
-    for (GameObjectList::const_iterator it = objects.begin(); 
-         it != objects.end(); ++it)
+    // Check for bullet - highest priority
+    for (GameObjectList::const_iterator it = objects.begin();
+        it != objects.end(); ++it)
     {
         shared_ptr<GameObject> obj = *it;
-
         if (obj->GetType() == GameObjectType("Bullet"))
         {
             for (int i = 0; i < 2; i++)
@@ -94,18 +94,28 @@ void Asteroid::OnCollision(const GameObjectList& objects)
             mWorld->FlagForRemoval(GetThisPtr());
             return;
         }
+    }
 
+    // Check for spaceship
+    for (GameObjectList::const_iterator it = objects.begin();
+        it != objects.end(); ++it)
+    {
+        shared_ptr<GameObject> obj = *it;
         if (obj->GetType() == GameObjectType("Spaceship"))
         {
-            // Destroy spaceship, remove asteroid, no points
             mWorld->FlagForRemoval(GetThisPtr());
             return;
         }
+    }
 
+    // Handle bouncing with other asteroids
+    for (GameObjectList::const_iterator it = objects.begin();
+        it != objects.end(); ++it)
+    {
+        shared_ptr<GameObject> obj = *it;
         if (obj->GetType() == GameObjectType("Asteroid") ||
             obj->GetType() == GameObjectType("SmallAsteroid"))
         {
-            // Bounce - swap velocities along collision normal
             GLVector3f normal = mPosition - obj->GetPosition();
             float length = sqrt(normal.x * normal.x + normal.y * normal.y);
             if (length > 0)
@@ -119,6 +129,14 @@ void Asteroid::OnCollision(const GameObjectList& objects)
             float otherDot = otherVel.x * normal.x + otherVel.y * normal.y;
             mVelocity.x += (otherDot - myDot) * normal.x;
             mVelocity.y += (otherDot - myDot) * normal.y;
+
+            // Push apart - large asteroid radius is 10.0f so combined = 20.0f
+            float overlap = 20.0f - length;
+            if (overlap > 0)
+            {
+                mPosition.x += normal.x * overlap * 0.5f;
+                mPosition.y += normal.y * overlap * 0.5f;
+            }
             return;
         }
     }
