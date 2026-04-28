@@ -94,13 +94,40 @@ void Spaceship::Shoot(void)
 
 bool Spaceship::CollisionTest(shared_ptr<GameObject> o)
 {
-	if (o->GetType() != GameObjectType("Asteroid")) return false;
+	if (o->GetType() != GameObjectType("Asteroid") &&
+		o->GetType() != GameObjectType("SmallAsteroid")) return false;
 	if (mBoundingShape.get() == NULL) return false;
 	if (o->GetBoundingShape().get() == NULL) return false;
 	return mBoundingShape->CollisionTest(o->GetBoundingShape());
 }
 
-void Spaceship::OnCollision(const GameObjectList &objects)
+void Spaceship::OnCollision(const GameObjectList& objects)
 {
-	mWorld->FlagForRemoval(GetThisPtr());
+	for (GameObjectList::const_iterator it = objects.begin();
+		it != objects.end(); ++it)
+	{
+		shared_ptr<GameObject> obj = *it;
+		if (obj->GetType() == GameObjectType("Asteroid"))
+		{
+			mWorld->FlagForRemoval(GetThisPtr());
+			return;
+		}
+		if (obj->GetType() == GameObjectType("SmallAsteroid"))
+		{
+			// Bounce
+			GLVector3f normal = mPosition - obj->GetPosition();
+			float length = sqrt(normal.x * normal.x + normal.y * normal.y);
+			if (length > 0)
+			{
+				normal.x /= length;
+				normal.y /= length;
+			}
+			GLVector3f otherVel = obj->GetVelocity();
+			float otherDot = otherVel.x * normal.x + otherVel.y * normal.y;
+			float myDot = mVelocity.x * normal.x + mVelocity.y * normal.y;
+			mVelocity.x += (otherDot - myDot) * normal.x;
+			mVelocity.y += (otherDot - myDot) * normal.y;
+			return;
+		}
+	}
 }
