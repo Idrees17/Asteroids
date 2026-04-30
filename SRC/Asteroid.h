@@ -12,8 +12,11 @@ public:
     bool CollisionTest(shared_ptr<GameObject> o);
     void OnCollision(const GameObjectList& objects);
 
+    bool WasHitByBullet() { return mHitByBullet; }
+
 protected:
-    Asteroid(char const* const type_name);  // For subclasses
+    Asteroid(char const* const type_name);
+    bool mHitByBullet = false;
 };
 
 #endif

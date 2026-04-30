@@ -74,6 +74,7 @@ void Asteroid::OnCollision(const GameObjectList& objects)
         shared_ptr<GameObject> obj = *it;
         if (obj->GetType() == GameObjectType("Bullet"))
         {
+            mHitByBullet = true;
             for (int i = 0; i < 2; i++)
             {
                 shared_ptr<SmallAsteroid> small = make_shared<SmallAsteroid>();

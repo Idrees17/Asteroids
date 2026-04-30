@@ -7,6 +7,7 @@
 #include "GameObjectType.h"
 #include "IScoreListener.h"
 #include "IGameWorldListener.h"
+#include "Asteroid.h"
 
 class ScoreKeeper : public IGameWorldListener
 {
@@ -19,11 +20,19 @@ public:
 
 	void OnObjectRemoved(GameWorld* world, shared_ptr<GameObject> object)
 	{
-		if (object->GetType() == GameObjectType("Asteroid")) {
-			mScore += 10;
-			FireScoreChanged();
+		if (object->GetType() == GameObjectType("Asteroid"))
+		{
+			// Cast to Asteroid to check if it was hit by bullet
+			shared_ptr<Asteroid> asteroid =
+				dynamic_pointer_cast<Asteroid>(object);
+			if (asteroid && asteroid->WasHitByBullet())
+			{
+				mScore += 10;
+				FireScoreChanged();
+			}
 		}
-		else if (object->GetType() == GameObjectType("SmallAsteroid")) {
+		else if (object->GetType() == GameObjectType("SmallAsteroid"))
+		{
 			mScore += 20;
 			FireScoreChanged();
 		}
