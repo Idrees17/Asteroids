@@ -4,7 +4,8 @@
 class IPlayerListener
 {
 public:
-	virtual void OnPlayerKilled(int lives_left) = 0;
+    virtual void OnPlayerKilled(int lives_left) = 0;
+    virtual void OnLifeGained(int lives_total) = 0;
 };
 
 #endif
