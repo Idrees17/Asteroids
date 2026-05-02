@@ -16,34 +16,6 @@ WeaponUpgradePowerup::WeaponUpgradePowerup(Spaceship* spaceship)
 
 WeaponUpgradePowerup::~WeaponUpgradePowerup(void) {}
 
-void WeaponUpgradePowerup::Render(void)
-{
-    // Draw a yellow circle with arrow symbol
-    glDisable(GL_LIGHTING);
-    glColor3f(1.0f, 1.0f, 0.0f);  // Yellow
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < 16; i++)
-    {
-        float angle = 2.0f * M_PI * i / 16;
-        glVertex2f(cos(angle) * 5.0f, sin(angle) * 5.0f);
-    }
-    glEnd();
-
-    // Draw 3 arrows to represent spread shot
-    glBegin(GL_LINES);
-    // Centre arrow
-    glVertex2f(0.0f, 0.0f);
-    glVertex2f(0.0f, 4.0f);
-    // Left arrow
-    glVertex2f(0.0f, 0.0f);
-    glVertex2f(-3.0f, 3.0f);
-    // Right arrow
-    glVertex2f(0.0f, 0.0f);
-    glVertex2f(3.0f, 3.0f);
-    glEnd();
-    glEnable(GL_LIGHTING);
-}
-
 bool WeaponUpgradePowerup::CollisionTest(shared_ptr<GameObject> o)
 {
     if (o->GetType() != GameObjectType("Spaceship")) return false;

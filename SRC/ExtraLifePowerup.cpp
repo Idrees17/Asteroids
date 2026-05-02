@@ -16,28 +16,6 @@ ExtraLifePowerup::ExtraLifePowerup(Player* player, Spaceship* spaceship)
 
 ExtraLifePowerup::~ExtraLifePowerup(void) {}
 
-void ExtraLifePowerup::Render(void)
-{
-    glDisable(GL_LIGHTING);
-    glColor3f(0.0f, 1.0f, 0.0f);  // Green
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < 16; i++)
-    {
-        float angle = 2.0f * M_PI * i / 16;
-        glVertex2f(cos(angle) * 5.0f, sin(angle) * 5.0f);
-    }
-    glEnd();
-
-    // Plus symbol
-    glBegin(GL_LINES);
-    glVertex2f(-3.0f, 0.0f);
-    glVertex2f(3.0f, 0.0f);
-    glVertex2f(0.0f, -3.0f);
-    glVertex2f(0.0f, 3.0f);
-    glEnd();
-    glEnable(GL_LIGHTING);
-}
-
 bool ExtraLifePowerup::CollisionTest(shared_ptr<GameObject> o)
 {
     if (o->GetType() != GameObjectType("Spaceship")) return false;

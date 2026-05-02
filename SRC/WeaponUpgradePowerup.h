@@ -10,7 +10,6 @@ public:
     WeaponUpgradePowerup(Spaceship* spaceship);
     ~WeaponUpgradePowerup(void);
 
-    virtual void Render(void);
     bool CollisionTest(shared_ptr<GameObject> o);
     void OnCollision(const GameObjectList& objects);
 

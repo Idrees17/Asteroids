@@ -58,6 +58,9 @@ void Asteroids::Start()
     Animation* explosion_anim = AnimationManager::GetInstance().CreateAnimationFromFile("explosion", 64, 1024, 64, 64, "explosion_fs.png");
     Animation* asteroid1_anim = AnimationManager::GetInstance().CreateAnimationFromFile("asteroid1", 128, 8192, 128, 128, "asteroid1_fs.png");
     Animation* spaceship_anim = AnimationManager::GetInstance().CreateAnimationFromFile("spaceship", 128, 128, 128, 128, "spaceship_fs.png");
+    Animation* extralife_anim = AnimationManager::GetInstance().CreateAnimationFromFile("extralife", 128, 128, 128, 128, "Heart.png");
+    Animation* invulnerability_anim = AnimationManager::GetInstance().CreateAnimationFromFile("invulnerability", 128, 128, 128, 128, "Shield.png");
+    Animation* weapon_anim = AnimationManager::GetInstance().CreateAnimationFromFile("weapon", 128, 128, 128, 128, "BulletSpread.png");
 
     // Create a spaceship and add it to the world
     mGameWorld->AddObject(CreateSpaceship());
@@ -80,7 +83,7 @@ void Asteroids::Start()
     SetTimer(10000, SPAWN_INVULNERABILITY);
 
     // Start spawning Weapon Powerup after 20 seconds
-    SetTimer(5000, SPAWN_WEAPON);
+    SetTimer(20000, SPAWN_WEAPON);
 
     // Start the game
     GameSession::Start();
@@ -312,6 +315,16 @@ void Asteroids::CreateExtraLifePowerup()
         make_shared<ExtraLifePowerup>(&mPlayer, mSpaceship.get());
     powerup->SetBoundingShape(make_shared<BoundingSphere>(
         powerup->GetThisPtr(), 5.0f));
+
+    // Add sprite
+    Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("extralife");
+    shared_ptr<Sprite> sprite = make_shared<Sprite>(
+        anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+    sprite->SetLoopAnimation(true);
+    powerup->SetSprite(sprite);
+    powerup->SetScale(0.15f);
+
+
     mGameWorld->AddObject(powerup);
     SetTimer(15000, SPAWN_EXTRALIFE);
 }
@@ -322,6 +335,16 @@ void Asteroids::CreateInvulnerabilityPowerup()
         make_shared<InvulnerabilityPowerup>(mSpaceship.get());
     powerup->SetBoundingShape(make_shared<BoundingSphere>(
         powerup->GetThisPtr(), 5.0f));
+
+    // Add sprite
+    Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("invulnerability");
+    shared_ptr<Sprite> sprite = make_shared<Sprite>(
+        anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+    sprite->SetLoopAnimation(true);
+    powerup->SetSprite(sprite);
+    powerup->SetScale(0.15f);
+
+
     mGameWorld->AddObject(powerup);
     SetTimer(20000, SPAWN_INVULNERABILITY);
 }
@@ -332,6 +355,15 @@ void Asteroids::CreateWeaponUpgradePowerup()
         make_shared<WeaponUpgradePowerup>(mSpaceship.get());
     powerup->SetBoundingShape(make_shared<BoundingSphere>(
         powerup->GetThisPtr(), 5.0f));
+
+    // Add sprite
+    Animation* anim_ptr = AnimationManager::GetInstance().GetAnimationByName("weapon");
+    shared_ptr<Sprite> sprite = make_shared<Sprite>(
+        anim_ptr->GetWidth(), anim_ptr->GetHeight(), anim_ptr);
+    sprite->SetLoopAnimation(true);
+    powerup->SetSprite(sprite);
+    powerup->SetScale(0.2f);
+
     mGameWorld->AddObject(powerup);
     SetTimer(20000, SPAWN_WEAPON);
 }

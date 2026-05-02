@@ -11,7 +11,6 @@ public:
     ExtraLifePowerup(Player* player, Spaceship* spaceship);
     ~ExtraLifePowerup(void);
 
-    virtual void Render(void);
     bool CollisionTest(shared_ptr<GameObject> o);
     void OnCollision(const GameObjectList& objects);
 
