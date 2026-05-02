@@ -14,6 +14,7 @@
 #include "SmallAsteroid.h"
 #include "ExtraLifePowerup.h"
 #include "InvulnerabilityPowerup.h"
+#include "WeaponUpgradePowerup.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -75,8 +76,11 @@ void Asteroids::Start()
     // Start spawning Extra Life Powerups after 15 seconds
     SetTimer(15000, SPAWN_EXTRALIFE);
 
-    // Start spawning Invulnerability Powerup after 20 seconds
-    SetTimer(5000, SPAWN_INVULNERABILITY);
+    // Start spawning Invulnerability Powerup after 10 seconds
+    SetTimer(10000, SPAWN_INVULNERABILITY);
+
+    // Start spawning Weapon Powerup after 20 seconds
+    SetTimer(5000, SPAWN_WEAPON);
 
     // Start the game
     GameSession::Start();
@@ -181,6 +185,11 @@ void Asteroids::OnTimer(int value)
     if (value == SPAWN_INVULNERABILITY)
     {
         CreateInvulnerabilityPowerup();
+    }
+
+    if (value == SPAWN_WEAPON)
+    {
+        CreateWeaponUpgradePowerup();
     }
 }
 
@@ -315,4 +324,14 @@ void Asteroids::CreateInvulnerabilityPowerup()
         powerup->GetThisPtr(), 5.0f));
     mGameWorld->AddObject(powerup);
     SetTimer(20000, SPAWN_INVULNERABILITY);
+}
+
+void Asteroids::CreateWeaponUpgradePowerup()
+{
+    shared_ptr<WeaponUpgradePowerup> powerup =
+        make_shared<WeaponUpgradePowerup>(mSpaceship.get());
+    powerup->SetBoundingShape(make_shared<BoundingSphere>(
+        powerup->GetThisPtr(), 5.0f));
+    mGameWorld->AddObject(powerup);
+    SetTimer(20000, SPAWN_WEAPON);
 }

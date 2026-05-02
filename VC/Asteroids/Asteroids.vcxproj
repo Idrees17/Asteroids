@@ -112,6 +112,7 @@
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\SRC\SmallAsteroid.cpp" />
     <ClCompile Include="..\..\src\Spaceship.cpp" />
+    <ClCompile Include="..\..\SRC\WeaponUpgradePowerup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SRC\Asteroid.h" />
@@ -126,6 +127,7 @@
     <ClInclude Include="..\..\SRC\ScoreKeeper.h" />
     <ClInclude Include="..\..\SRC\SmallAsteroid.h" />
     <ClInclude Include="..\..\src\Spaceship.h" />
+    <ClInclude Include="..\..\SRC\WeaponUpgradePowerup.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

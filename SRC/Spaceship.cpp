@@ -7,17 +7,17 @@
 using namespace std;
 
 Spaceship::Spaceship()
-    : GameObject("Spaceship"), mThrust(0), mInvulnerableTime(0)
+    : GameObject("Spaceship"), mThrust(0), mInvulnerableTime(0), mSpreadShotTime(0)
 {
 }
 
 Spaceship::Spaceship(GLVector3f p, GLVector3f v, GLVector3f a, GLfloat h, GLfloat r)
-    : GameObject("Spaceship", p, v, a, h, r), mThrust(0), mInvulnerableTime(0)
+    : GameObject("Spaceship", p, v, a, h, r), mThrust(0), mInvulnerableTime(0), mSpreadShotTime(0)
 {
 }
 
 Spaceship::Spaceship(const Spaceship& s)
-    : GameObject(s), mThrust(0), mInvulnerableTime(0)
+    : GameObject(s), mThrust(0), mInvulnerableTime(0), mSpreadShotTime(0)
 {
 }
 
@@ -32,14 +32,19 @@ void Spaceship::Update(int t)
         mInvulnerableTime -= t;
         if (mInvulnerableTime < 0) mInvulnerableTime = 0;
     }
+    // Count down spread shot timer
+    if (mSpreadShotTime > 0)
+    {
+        mSpreadShotTime -= t;
+        if (mSpreadShotTime < 0) mSpreadShotTime = 0;
+    }
 }
 
 void Spaceship::Render(void)
 {
-    // Flash the ship when invulnerable
+    // Flash when invulnerable
     if (mInvulnerableTime > 0)
     {
-        // Only render every other 200ms to create flashing effect
         if ((mInvulnerableTime / 200) % 2 == 0) return;
     }
 
@@ -65,21 +70,56 @@ void Spaceship::Rotate(float r)
 void Spaceship::Shoot(void)
 {
     if (!mWorld) return;
-    GLVector3f spaceship_heading(cos(DEG2RAD * mAngle), sin(DEG2RAD * mAngle), 0);
-    spaceship_heading.normalize();
-    GLVector3f bullet_position = mPosition + (spaceship_heading * 4);
+
+    // Main bullet - always fired straight ahead
+    GLVector3f heading(cos(DEG2RAD * mAngle), sin(DEG2RAD * mAngle), 0);
+    heading.normalize();
+    GLVector3f bullet_position = mPosition + (heading * 4);
     float bullet_speed = 30;
-    GLVector3f bullet_velocity = mVelocity + spaceship_heading * bullet_speed;
-    shared_ptr<GameObject> bullet
-    (new Bullet(bullet_position, bullet_velocity, mAcceleration, mAngle, 0, 2000));
-    bullet->SetBoundingShape(make_shared<BoundingSphere>(bullet->GetThisPtr(), 2.0f));
+    GLVector3f bullet_velocity = mVelocity + heading * bullet_speed;
+
+    shared_ptr<GameObject> bullet(new Bullet(
+        bullet_position, bullet_velocity, mAcceleration, mAngle, 0, 2000));
+    bullet->SetBoundingShape(make_shared<BoundingSphere>(
+        bullet->GetThisPtr(), 2.0f));
     bullet->SetShape(mBulletShape);
     mWorld->AddObject(bullet);
+
+    // If spread shot active fire 2 extra bullets at angles
+    if (mSpreadShotTime > 0)
+    {
+        // Left bullet - 20 degrees left
+        float left_angle = mAngle + 20.0f;
+        GLVector3f left_heading(cos(DEG2RAD * left_angle),
+            sin(DEG2RAD * left_angle), 0);
+        left_heading.normalize();
+        GLVector3f left_position = mPosition + (left_heading * 4);
+        GLVector3f left_velocity = mVelocity + left_heading * bullet_speed;
+        shared_ptr<GameObject> left_bullet(new Bullet(
+            left_position, left_velocity, mAcceleration, left_angle, 0, 2000));
+        left_bullet->SetBoundingShape(make_shared<BoundingSphere>(
+            left_bullet->GetThisPtr(), 2.0f));
+        left_bullet->SetShape(mBulletShape);
+        mWorld->AddObject(left_bullet);
+
+        // Right bullet - 20 degrees right
+        float right_angle = mAngle - 20.0f;
+        GLVector3f right_heading(cos(DEG2RAD * right_angle),
+            sin(DEG2RAD * right_angle), 0);
+        right_heading.normalize();
+        GLVector3f right_position = mPosition + (right_heading * 4);
+        GLVector3f right_velocity = mVelocity + right_heading * bullet_speed;
+        shared_ptr<GameObject> right_bullet(new Bullet(
+            right_position, right_velocity, mAcceleration, right_angle, 0, 2000));
+        right_bullet->SetBoundingShape(make_shared<BoundingSphere>(
+            right_bullet->GetThisPtr(), 2.0f));
+        right_bullet->SetShape(mBulletShape);
+        mWorld->AddObject(right_bullet);
+    }
 }
 
 bool Spaceship::CollisionTest(shared_ptr<GameObject> o)
 {
-    // No collisions while invulnerable
     if (mInvulnerableTime > 0) return false;
     if (o->GetType() != GameObjectType("Asteroid") &&
         o->GetType() != GameObjectType("SmallAsteroid")) return false;
@@ -90,7 +130,6 @@ bool Spaceship::CollisionTest(shared_ptr<GameObject> o)
 
 void Spaceship::OnCollision(const GameObjectList& objects)
 {
-    // If invulnerable, ignore all collisions
     if (mInvulnerableTime > 0) return;
 
     for (GameObjectList::const_iterator it = objects.begin();

@@ -61,12 +61,14 @@ private:
     shared_ptr<GameObject> CreateExplosion();
     void CreateExtraLifePowerup();
     void CreateInvulnerabilityPowerup();
+    void CreateWeaponUpgradePowerup();
 
     const static uint SHOW_GAME_OVER = 0;
     const static uint START_NEXT_LEVEL = 1;
     const static uint CREATE_NEW_PLAYER = 2;
     const static uint SPAWN_EXTRALIFE = 3;
     const static uint SPAWN_INVULNERABILITY = 4;
+    const static uint SPAWN_WEAPON = 5;
 
     ScoreKeeper mScoreKeeper;
     Player mPlayer;

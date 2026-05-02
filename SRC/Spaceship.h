@@ -27,12 +27,16 @@ public:
     void SetInvulnerable(int milliseconds) { mInvulnerableTime = milliseconds; }
     bool IsInvulnerable() { return mInvulnerableTime > 0; }
 
+    void SetSpreadShot(int milliseconds) { mSpreadShotTime = milliseconds; }
+    bool HasSpreadShot() { return mSpreadShotTime > 0; }
+
     bool CollisionTest(shared_ptr<GameObject> o);
     void OnCollision(const GameObjectList& objects);
 
 private:
     float mThrust;
     int mInvulnerableTime;
+    int mSpreadShotTime;
 
     shared_ptr<Shape> mSpaceshipShape;
     shared_ptr<Shape> mThrusterShape;
