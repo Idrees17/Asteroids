@@ -13,6 +13,7 @@
 #include "Explosion.h"
 #include "SmallAsteroid.h"
 #include "ExtraLifePowerup.h"
+#include "InvulnerabilityPowerup.h"
 
 // PUBLIC INSTANCE CONSTRUCTORS ///////////////////////////////////////////////
 
@@ -71,8 +72,11 @@ void Asteroids::Start()
     // Add this class as a listener of the player
     mPlayer.AddListener(thisPtr);
 
-    // Start spawning powerups after 15 seconds
-    SetTimer(15000, SPAWN_POWERUP);
+    // Start spawning Extra Life Powerups after 15 seconds
+    SetTimer(15000, SPAWN_EXTRALIFE);
+
+    // Start spawning Invulnerability Powerup after 20 seconds
+    SetTimer(5000, SPAWN_INVULNERABILITY);
 
     // Start the game
     GameSession::Start();
@@ -169,9 +173,14 @@ void Asteroids::OnTimer(int value)
         mGameOverLabel->SetVisible(true);
     }
 
-    if (value == SPAWN_POWERUP)
+    if (value == SPAWN_EXTRALIFE)
     {
         CreateExtraLifePowerup();
+    }
+
+    if (value == SPAWN_INVULNERABILITY)
+    {
+        CreateInvulnerabilityPowerup();
     }
 }
 
@@ -290,9 +299,20 @@ shared_ptr<GameObject> Asteroids::CreateExplosion()
 
 void Asteroids::CreateExtraLifePowerup()
 {
-    shared_ptr<ExtraLifePowerup> powerup = make_shared<ExtraLifePowerup>(&mPlayer);
-    powerup->SetBoundingShape(make_shared<BoundingSphere>(powerup->GetThisPtr(), 5.0f));
+    shared_ptr<ExtraLifePowerup> powerup =
+        make_shared<ExtraLifePowerup>(&mPlayer, mSpaceship.get());
+    powerup->SetBoundingShape(make_shared<BoundingSphere>(
+        powerup->GetThisPtr(), 5.0f));
     mGameWorld->AddObject(powerup);
-    // Spawn another one after 15 seconds
-    SetTimer(15000, SPAWN_POWERUP);
+    SetTimer(15000, SPAWN_EXTRALIFE);
+}
+
+void Asteroids::CreateInvulnerabilityPowerup()
+{
+    shared_ptr<InvulnerabilityPowerup> powerup =
+        make_shared<InvulnerabilityPowerup>(mSpaceship.get());
+    powerup->SetBoundingShape(make_shared<BoundingSphere>(
+        powerup->GetThisPtr(), 5.0f));
+    mGameWorld->AddObject(powerup);
+    SetTimer(20000, SPAWN_INVULNERABILITY);
 }

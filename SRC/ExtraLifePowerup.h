@@ -3,11 +3,12 @@
 
 #include "GameObject.h"
 #include "Player.h"
+#include "Spaceship.h"
 
 class ExtraLifePowerup : public GameObject
 {
 public:
-    ExtraLifePowerup(Player* player);
+    ExtraLifePowerup(Player* player, Spaceship* spaceship);
     ~ExtraLifePowerup(void);
 
     virtual void Render(void);
@@ -16,6 +17,7 @@ public:
 
 private:
     Player* mPlayer;
+    Spaceship* mSpaceship;
 };
 
 #endif

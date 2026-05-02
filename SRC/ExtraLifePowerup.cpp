@@ -2,10 +2,9 @@
 #include "GameUtil.h"
 #include "BoundingShape.h"
 #include "GameWorld.h"
-#include "Spaceship.h"
 
-ExtraLifePowerup::ExtraLifePowerup(Player* player)
-    : GameObject("ExtraLifePowerup"), mPlayer(player)
+ExtraLifePowerup::ExtraLifePowerup(Player* player, Spaceship* spaceship)
+    : GameObject("ExtraLifePowerup"), mPlayer(player), mSpaceship(spaceship)
 {
     mPosition.x = (rand() % 200) - 100;
     mPosition.y = (rand() % 200) - 100;
@@ -19,7 +18,6 @@ ExtraLifePowerup::~ExtraLifePowerup(void) {}
 
 void ExtraLifePowerup::Render(void)
 {
-    // Draw a green circle
     glDisable(GL_LIGHTING);
     glColor3f(0.0f, 1.0f, 0.0f);  // Green
     glBegin(GL_LINE_LOOP);
@@ -30,7 +28,7 @@ void ExtraLifePowerup::Render(void)
     }
     glEnd();
 
-    // Draw a + symbol inside the circle
+    // Plus symbol
     glBegin(GL_LINES);
     glVertex2f(-3.0f, 0.0f);
     glVertex2f(3.0f, 0.0f);
@@ -56,10 +54,7 @@ void ExtraLifePowerup::OnCollision(const GameObjectList& objects)
         shared_ptr<GameObject> obj = *it;
         if (obj->GetType() == GameObjectType("Spaceship"))
         {
-            // Give brief invulnerability when collecting powerup
-            shared_ptr<Spaceship> ship =
-                dynamic_pointer_cast<Spaceship>(obj);
-            if (ship) ship->SetInvulnerable(2000);
+            mSpaceship->SetInvulnerable(2000);
             mPlayer->AddLife();
             mWorld->FlagForRemoval(GetThisPtr());
             return;
